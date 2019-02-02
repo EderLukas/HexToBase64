@@ -2,58 +2,113 @@
  * Lukas Eder, 26.01.2019
  */
 
- #include <iostream>
- #include <vector>
- using namespace std;
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
 
-void convert(unsigned int &hex, const unsigned int &mask,
-             vector<unsigned int> &converted_hex) {
-
-    converted_hex.push_back(hex&mask);
-    do {
-        converted_hex.push_back((hex>>=6)&mask);
-    } while (hex<<6 != 0);
+void getUserInput(string &user_input) {
+    printf("\nPlease enter your hex code: ");
+    getline(cin, user_input);
 }
 
-void createBase64(vector<unsigned int> &converted_hex, vector<char> &base_64){
-    char letter;
-    for (unsigned int &element : converted_hex) {
-        if (element <= 25) {
-            letter = element+65;
-            base_64.push_back(letter);
-        } else if (element >= 26 || element <= 51) {
-            letter = element+71;
-            base_64.push_back(letter);
-        } else if(element >= 52 || element <= 61) {
-            letter = element-4;
-            base_64.push_back(letter);
-        } else if (element == 62) {
-            base_64.push_back('+');
-        } else if (element == 63) {
-            base_64.push_back('/');
+void convertInputToHex (const string &user_input, vector<unsigned int> &hex_cache) {
+    for(const char &pos : user_input) {
+        if (pos >= 48 && pos <= 57) {
+            hex_cache.push_back(pos-'0');
+        }
+        else if (pos == 65 || pos == 97) {
+            hex_cache.push_back(10);
+        } else if (pos == 66|| pos == 98) {
+            hex_cache.push_back(11);
+        } else if (pos == 67|| pos == 99) {
+            hex_cache.push_back(12);
+        } else if (pos == 68|| pos == 100) {
+            hex_cache.push_back(13);
+        } else if (pos == 69|| pos == 101) {
+            hex_cache.push_back(14);
+        } else if (pos == 70|| pos == 102) {
+            hex_cache.push_back(15);
         }
     }
 }
 
-void displayConvertion(vector<char> &base_64) {
-    printf("\nYour convertion is: ");
-    for(char &i : base_64){
-        printf("%c", i);
+void invertCache(const vector<unsigned int> &hex_cache, vector<unsigned int> &inverted_hex_cache) {
+    unsigned int size_of_cache = hex_cache.size();
+    for (int i = size_of_cache - 1; i >= 0; i--) {
+        inverted_hex_cache.push_back(hex_cache.at(i));
     }
+}
+
+void printBase64Char(unsigned int &letter){
+    cout << letter << endl;
+    if (letter <= 25) {
+        //printf("%c", letter+65);
+    } else if (letter >= 26 || letter <= 51) {
+        //printf("%c", letter+71);
+    } else if(letter >= 52 || letter <= 61) {
+        //printf("%c", letter-4);
+    } else if (letter == 62) {
+        //cout << '+';
+    } else if (letter == 63) {
+        //cout << '/';
+    }
+}
+
+void binaryConvertionToBase64(vector<unsigned int> &hex_cache,
+                              const unsigned int &mask,
+                              void printBase64(unsigned int &letter)) {
+
+    int cache_size = hex_cache.size();
+    if (cache_size % 3 != 0) {
+        int delimiter = cache_size % 3;
+        for (int i = 0; i < delimiter; i++) {
+            hex_cache.insert(hex_cache.begin(), 0);
+        }
+    }
+
+    int iterations_left = cache_size;
+    int index = 0;
+    unsigned int tmp_hex = 0;
+
+    printf("\nYour convertion is: ");
+
+    do {
+        for (int i = 0; i < 3; i++) {
+            if (i == 0) {
+                tmp_hex += 265*hex_cache.at(index);
+            } else if ( i == 1) {
+                tmp_hex += 16*hex_cache.at(index);
+            } else {
+                tmp_hex += hex_cache.at(index);
+            }
+            iterations_left--;
+            index++;
+        }
+
+        unsigned int b64 = tmp_hex&mask;
+        printBase64(b64);
+
+        do {
+            b64 = (tmp_hex>>=6)&mask;
+            printBase64(b64);
+        } while (tmp_hex<<6 != 0);
+    } while(iterations_left != 0);
     printf("\n\n");
 }
 
- int main () {
-    unsigned int hex = 0x492;
-    //76D206B696C6C696E6720796F757220627261696E206C696B65206120706F69736F6e6F7573206DED757368726F6F6D;
+
+int main () {
+    vector<unsigned int> hex_cache;
+    vector<unsigned int> inverted_hex_cache;
     const unsigned int mask = 0x3F;
-    vector<unsigned int> converted_hex;
-    vector<char> base_64;
+    string user_input;
 
-    convert(hex, mask, converted_hex);
-    createBase64(converted_hex, base_64);
-    // erase 0x of hex number
-    base_64.pop_back();
-
-    displayConvertion(base_64);
- }
+    getUserInput(user_input);
+    convertInputToHex(user_input, hex_cache);
+    //invertCache(hex_cache, inverted_hex_cache);
+    for (unsigned int i : hex_cache) {
+        cout << i;
+    }
+    binaryConvertionToBase64(hex_cache, mask, printBase64Char);
+}
