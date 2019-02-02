@@ -21,10 +21,10 @@ void createBase64(vector<unsigned int> &converted_hex, vector<char> &base_64){
         if (element <= 25) {
             letter = element+65;
             base_64.push_back(letter);
-        } else if (element <= 26 || element >= 51) {
+        } else if (element >= 26 || element <= 51) {
             letter = element+71;
             base_64.push_back(letter);
-        } else if(element <= 52 || element >= 61) {
+        } else if(element >= 52 || element <= 61) {
             letter = element-4;
             base_64.push_back(letter);
         } else if (element == 62) {
@@ -44,7 +44,7 @@ void displayConvertion(vector<char> &base_64) {
 }
 
  int main () {
-    unsigned int hex = 0xA00;
+    unsigned int hex = 0x492;
     //76D206B696C6C696E6720796F757220627261696E206C696B65206120706F69736F6e6F7573206DED757368726F6F6D;
     const unsigned int mask = 0x3F;
     vector<unsigned int> converted_hex;
