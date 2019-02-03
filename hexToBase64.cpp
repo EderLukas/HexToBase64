@@ -13,13 +13,13 @@ void getUserInput(vector<unsigned int> &user_input) {
     unsigned int input_elem = 0;
     while (1) {
         scanf("%x", &input_elem);
-        user_input.push_back(input_elem);
-        // TODO delete debug code
-        cout << "input: " << input_elem << endl;
         if (input_elem == 0x3B) {
             while((getchar()) != '\n');
             break;
         }
+        user_input.push_back(input_elem);
+        // TODO delete debug code
+        cout << "input: " << input_elem << endl;
         while((getchar()) != '\n');
     }
 }
@@ -105,6 +105,6 @@ int main () {
     vector<unsigned int> user_input;
 
     getUserInput(user_input);
-    invertCache(hex_cache, inverted_hex_cache);
+    invertCache(user_input, inverted_hex_cache);
     binaryConvertionToBase64(inverted_hex_cache, mask, printBase64Char);
 }
