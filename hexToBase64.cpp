@@ -1,5 +1,11 @@
-/* Hex to Base64 converter
- * Lukas Eder, 26.01.2019
+/*
+ * source code: hexToBase64.cpp
+ * title:       Hex to Base64 Converter
+ * description: This programm lets the user convert a
+ *              hex number into a string of Base64 characters.
+ *              The hex number is defined in the main function.
+ * Author:      Lukas Eder
+ * date:        03.02.2019
  */
 
  #include <iostream>
@@ -45,7 +51,6 @@ void displayConvertion(vector<char> &base_64) {
 
  int main () {
     unsigned int hex = 0x492;
-    //76D206B696C6C696E6720796F757220627261696E206C696B65206120706F69736F6e6F7573206DED757368726F6F6D;
     const unsigned int mask = 0x3F;
     vector<unsigned int> converted_hex;
     vector<char> base_64;
