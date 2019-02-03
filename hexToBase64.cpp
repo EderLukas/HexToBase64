@@ -18,8 +18,6 @@ void getUserInput(vector<unsigned int> &user_input) {
             break;
         }
         user_input.push_back(input_elem);
-        // TODO delete debug code
-        cout << "input: " << input_elem << endl;
         while((getchar()) != '\n');
     }
 }
@@ -46,57 +44,71 @@ void printBase64Char(unsigned int &letter){
     }
 }
 
+void bit_shift(int &i, unsigned int &tmp_hex, vector<unsigned int> &hex_cache, int &index){
+    if (i == 0) {
+        tmp_hex = tmp_hex|hex_cache.at(index);
+        tmp_hex<<=4;
+    } else if ( i == 1) {
+        tmp_hex = tmp_hex|hex_cache.at(index);
+        tmp_hex<<=4;
+    } else {
+        tmp_hex += hex_cache.at(index);
+    }
+}
+
 void binaryConvertionToBase64(vector<unsigned int> &hex_cache,
                               const unsigned int &mask,
                               void printBase64(unsigned int &letter)) {
 
-    int cache_size = hex_cache.size();
-    // TODO delete debug code
-    cout << "cache size: " << cache_size << endl;
-    if (cache_size % 3 != 0) {
-        int delimiter = cache_size % 3;
-        for (int i = 0; i < delimiter; i++) {
-            hex_cache.insert(hex_cache.begin(), 0);
-        }
-    }
-
-    // TODO delete debug code
-    cout << "hex_cache: ";
-    for (unsigned int &hex : hex_cache){
-        cout << hex;
-    }
-    cout << endl;
-
-    int iterations_left = cache_size;
-    int index = 0;
-    unsigned int tmp_hex = 0;
-
     printf("\nYour convertion is: ");
 
-    do {
-        for (int i = 0; i < 3; i++) {
-            if (i == 0) {
-                tmp_hex += 265*hex_cache.at(index);
-            } else if ( i == 1) {
-                tmp_hex += 16*hex_cache.at(index);
-            } else {
-                tmp_hex += hex_cache.at(index);
+    int cache_size = hex_cache.size();
+    int index = 0;
+    unsigned int tmp_hex = 0;
+    int iter_rest = cache_size % 3;
+    int iter_rep = cache_size / 3;
+
+    if (!iter_rest) {
+        // HEX number is devidable by 3, no extra iterations to get full input
+        do{
+            for (int i = 0; i < 3; i++) {
+                bit_shift(i, tmp_hex, hex_cache, index);
+                iter_rep--;
+                index++;
             }
-            iterations_left--;
-            index++;
-        }
-
-        unsigned int b64 = tmp_hex&mask;
-        printBase64(b64);
-
-        do {
+            unsigned int b64 = tmp_hex&mask;
+            printBase64(b64);
             b64 = (tmp_hex>>=6)&mask;
             printBase64(b64);
-        } while (tmp_hex<<6 != 0);
-    } while(iterations_left != 0);
-    printf("\n\n");
-}
 
+        }while (iter_rep != 0);
+
+    } /*else if (iter_rest) {
+        // HEX number is not devidable by 3, extra iterations to get full input
+        do{
+            for (int i = 0; i < 3; i++) {
+                bit_shift(i, tmp_hex, hex_cache, index);
+                iter_rep--;
+                index++;
+            }
+            unsigned int b64 = tmp_hex&mask;
+            printBase64(b64);
+            b64 = (tmp_hex>>=6)&mask;
+            printBase64(b64);
+
+        }while (iter_rep != 0);
+        while(iter_rest) {
+            bit_shift(iter_rest, tmp_hex, hex_cache, index);
+            index++;
+        }
+        unsigned int b64 = tmp_hex&mask;
+        printBase64(b64);
+        b64 = (tmp_hex>>=6)&mask;
+        printBase64(b64);
+    }
+
+    printf("\n\n");*/
+}
 
 int main () {
     vector<unsigned int> hex_cache;
@@ -105,6 +117,5 @@ int main () {
     vector<unsigned int> user_input;
 
     getUserInput(user_input);
-    invertCache(user_input, inverted_hex_cache);
-    binaryConvertionToBase64(inverted_hex_cache, mask, printBase64Char);
+    binaryConvertionToBase64(user_input, mask, printBase64Char);
 }
