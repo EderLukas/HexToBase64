@@ -1,5 +1,10 @@
-/* Hex to Base64 converter
- * Lukas Eder, 26.01.2019
+/*
+ * source code: hexToBase64.cpp
+ * title:       Hex to Base64 Converter
+ * description: This programm lets the user convert a string of
+ *              hex numbers into a string of Base64 characters.
+ * Author:      Lukas Eder
+ * date:        03.02.2019
  */
 
 #include <iostream>
